@@ -1,9 +1,36 @@
 import random
+from .semantic_evaluation import main as SemanticEval
+from argparse import Namespace
 
 
 def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwargs):
     print("Starting Evaluation.....")
     print("Submission related metadata:")
+
+    gt_folder = '/data/ddad/EvalAI_data/evalai/gt'
+    pred_folder = '/data/ddad/EvalAI_data/evalai/pred'
+    ranges = [50, 100, 200]
+    classes = ['All', 'Car', 'Pedestrian', 'Bicycle']
+    metric = 'abs_rel'
+
+    args = Namespace(**{
+        'gt_folder': gt_folder,
+        'pred_folder': pred_folder,
+        'ranges': ranges, 'classes': classes,
+        'metric': metric,
+        'output_folder': None,
+        'min_num_valid_pixels': 1,
+        'use_gt_scale': True,
+        'crop': '',
+    })
+
+    results = SemanticEval(args)
+
+    metric = 'abs_rel'
+    dict_output = {}
+    for key, val in results.items():
+        dict_output[key] = val[metric] if val is not None else None
+
     """
     Evaluates the submission for a particular challenge phase adn returns score
     Arguments:
